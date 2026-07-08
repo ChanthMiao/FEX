@@ -787,12 +787,12 @@ void GenerateThunkLibsAction::OnAnalysisComplete(clang::ASTContext& context) {
     if (lib_version) {
       version_suffix = '.' + std::to_string(*lib_version);
     }
-    const std::string library_filename = libfilename + ".so" + version_suffix;
+    const std::string library_filename_to_use = (library_filename ? *library_filename : libfilename) + ".so" + version_suffix;
 
     // Load the host library in the global symbol namespace.
     // This follows how these libraries get loaded in a non-emulated environment,
     // Either by directly linking to the library or a loader (In OpenGL or Vulkan) putting everything in the global namespace.
-    file << "  fexldr_ptr_" << libname << "_so = dlopen(\"" << library_filename << "\", RTLD_GLOBAL | RTLD_LAZY);\n";
+    file << "  fexldr_ptr_" << libname << "_so = dlopen(\"" << library_filename_to_use << "\", RTLD_GLOBAL | RTLD_LAZY);\n";
 
     file << "  if (!fexldr_ptr_" << libname << "_so) { return false; }\n\n";
     for (auto& import : thunked_api) {

@@ -156,6 +156,7 @@ protected:
 
   std::unordered_map<const clang::Type*, RepackedType> types;
   std::optional<unsigned> lib_version;
+  std::optional<std::string> library_filename;
   std::vector<NamespaceInfo> namespaces;
 
   RepackedType& LookupType(clang::ASTContext& context, const clang::Type* type) {

@@ -9,6 +9,7 @@
 
 struct NamespaceAnnotations {
   std::optional<unsigned> version;
+  std::optional<std::string> library_filename;
   std::optional<std::string> load_host_endpoint_via;
   bool generate_guest_symtable = false;
   bool indirect_guest_calls = false;
@@ -51,6 +52,15 @@ static NamespaceAnnotations GetNamespaceAnnotations(clang::ASTContext& context, 
       }
       if (loader_function_str) {
         ret.load_host_endpoint_via = loader_function_str->getString();
+      }
+    } else if (name == "library_filename") {
+      auto libname_expr = field->getInClassInitializer()->IgnoreCasts();
+      auto libname_str = llvm::dyn_cast_or_null<clang::StringLiteral>(libname_expr);
+      if (libname_expr && !libname_str) {
+        throw report_error(libname_expr->getBeginLoc(), "Must initialize library_filename with a string");
+      }
+      if (libname_str) {
+        ret.library_filename = libname_str->getString();
       }
     } else if (name == "version") {
       auto initializer = field->getInClassInitializer()->IgnoreCasts();
@@ -290,6 +300,13 @@ void AnalysisAction::ParseInterface(clang::ASTContext& context) {
           throw report_error(template_decl->getBeginLoc(), "Library version must be defined in the global namespace");
         }
         lib_version = annotations.version;
+      }
+
+      if (annotations.library_filename) {
+        if (namespace_decl) {
+          throw report_error(template_decl->getBeginLoc(), "Library filename must be defined in the global namespace");
+        }
+        library_filename = annotations.library_filename;
       }
 
       // Process specializations of template fex_gen_config
