@@ -354,6 +354,19 @@ FEX_DEFAULT_VISIBILITY void FinalizeHostTrampolineForGuestFunction(HostToGuestTr
   }
 }
 
+FEX_DEFAULT_VISIBILITY uintptr_t GetGuestFromHostTrampoline(HostToGuestTrampolinePtr* TrampolineAddress) {
+  if (TrampolineAddress == nullptr) {
+    return 0;
+  }
+
+  auto& Trampoline = GetInstanceInfo(TrampolineAddress);
+
+  LOGMAN_THROW_A_FMT(Trampoline.CallCallback == (uintptr_t)&ThunkHandler_impl::CallCallback, "Invalid trampoline at {} passed to {}",
+                     fmt::ptr(TrampolineAddress), __FUNCTION__);
+
+  return Trampoline.GuestTarget;
+}
+
 namespace ThunkFunctions {
   void LoadLib(void* ArgsV) {
     struct LoadlibArgs {

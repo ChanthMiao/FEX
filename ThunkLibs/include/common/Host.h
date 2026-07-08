@@ -27,6 +27,8 @@ __attribute__((weak)) HostToGuestTrampolinePtr* MakeHostTrampolineForGuestFuncti
 
 __attribute__((weak)) HostToGuestTrampolinePtr* FinalizeHostTrampolineForGuestFunction(HostToGuestTrampolinePtr*, void* HostPacker);
 
+__attribute__((weak)) uintptr_t GetGuestFromHostTrampoline(HostToGuestTrampolinePtr*);
+
 __attribute__((weak)) void* GetGuestStack();
 
 __attribute__((weak)) void MoveGuestStack(uintptr_t NewAddress);
@@ -655,6 +657,11 @@ template<typename F>
 void FinalizeHostTrampolineForGuestFunction(guest_layout<F*> PreallocatedTrampolineForGuestFunction) {
   FEX::HLE::FinalizeHostTrampolineForGuestFunction((FEX::HLE::HostToGuestTrampolinePtr*)PreallocatedTrampolineForGuestFunction.data,
                                                    (void*)&CallbackUnpack<F>::CallGuestPtr);
+}
+
+template<typename F>
+F* GetGuestFromHostTrampoline(F* AllocatedTrampolineForGuestFunction) {
+  return (F*)FEX::HLE::GetGuestFromHostTrampoline((FEX::HLE::HostToGuestTrampolinePtr*)AllocatedTrampolineForGuestFunction);
 }
 
 // In the case of the thunk host_loader being the default, FEX need to use dlsym with RTLD_DEFAULT.
