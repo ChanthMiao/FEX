@@ -53,6 +53,23 @@
         "@PREFIX_LIB@/libcuda.so",
         "@PREFIX_LIB@/libcuda.so.1"
       ]
+    },
+    "crypto3": {
+      "Library": "libcrypto3-guest.so",
+      "Overlay": [
+        "@PREFIX_LIB@/libcrypto.so",
+        "@PREFIX_LIB@/libcrypto.so.3"
+      ]
+    },
+    "ssl3": {
+      "Library": "libssl3-guest.so",
+      "Overlay": [
+        "@PREFIX_LIB@/libssl.so",
+        "@PREFIX_LIB@/libssl.so.3"
+      ],
+      "Depends": [
+        "crypto3"
+      ]
     }
   }
 }

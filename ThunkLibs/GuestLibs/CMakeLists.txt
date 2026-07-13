@@ -212,6 +212,14 @@ if (BITNESS EQUAL 64)
   generate(libdrm ${CMAKE_CURRENT_SOURCE_DIR}/../libdrm/libdrm_interface.cpp)
   target_include_directories_from_pkgconfig(libdrm-guest-deps libdrm /usr/include/drm /usr/include/libdrm)
   add_guest_lib(drm "libdrm.so.2")
+
+  generate(libcrypto3 ${CMAKE_CURRENT_SOURCE_DIR}/../libcrypto3/libcrypto3_interface.cpp)
+  target_include_directories_from_pkgconfig(libcrypto3-guest-deps libcrypto)
+  add_guest_lib(crypto3 "libcrypto.so.3")
+
+  generate(libssl3 ${CMAKE_CURRENT_SOURCE_DIR}/../libssl3/libssl3_interface.cpp)
+  target_include_directories_from_pkgconfig(libssl3-guest-deps libssl)
+  add_guest_lib(ssl3 "libssl.so.3")
 endif()
 
 generate(libwayland-client ${CMAKE_CURRENT_SOURCE_DIR}/../libwayland-client/libwayland-client_interface.cpp)

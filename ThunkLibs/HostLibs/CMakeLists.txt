@@ -138,6 +138,16 @@ foreach(GUEST_BITNESS IN LISTS BITNESS_LIST)
   generate(libdrm ${CMAKE_CURRENT_SOURCE_DIR}/../libdrm/libdrm_interface.cpp ${GUEST_BITNESS})
   target_include_directories_from_pkgconfig(libdrm-${GUEST_BITNESS}-deps libdrm /usr/include/drm /usr/include/libdrm)
   add_host_lib(drm ${GUEST_BITNESS})
+
+  find_package(OpenSSL REQUIRED)
+
+  generate(libcrypto3 ${CMAKE_CURRENT_SOURCE_DIR}/../libcrypto3/libcrypto3_interface.cpp ${GUEST_BITNESS})
+  target_include_directories_from_pkgconfig(libcrypto3-${GUEST_BITNESS}-deps libcrypto)
+  add_host_lib(crypto3 ${GUEST_BITNESS})
+
+  generate(libssl3 ${CMAKE_CURRENT_SOURCE_DIR}/../libssl3/libssl3_interface.cpp ${GUEST_BITNESS})
+  target_include_directories_from_pkgconfig(libssl3-${GUEST_BITNESS}-deps libssl)
+  add_host_lib(ssl3 ${GUEST_BITNESS})
 endforeach()
 
 set(BITNESS_LIST "32;64")
