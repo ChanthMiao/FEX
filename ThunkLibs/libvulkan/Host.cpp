@@ -22,14 +22,6 @@ $end_info$
 #include <unordered_map>
 #include <vector>
 
-#ifdef IS_32BIT_THUNK
-// Union type embedded in VkDescriptorGetInfoEXT
-template<>
-struct guest_layout<VkDescriptorDataEXT> {
-  char union_storage[8];
-};
-#endif
-
 #include "thunkgen_host_libvulkan.inl"
 
 #include <common/X11Manager.h>
@@ -2123,7 +2115,7 @@ void fex_custom_repack_entry(host_layout<VkDescriptorGetInfoEXT>& into, const gu
   case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT: {
     // VkSampler* or VkDescriptorImageInfo*. Handle by zero-extending
     guest_layout<VkSampler*> guest_data;
-    memcpy(&guest_data, from.data.data.union_storage, sizeof(guest_data));
+    memcpy(&guest_data, &from.data.data, sizeof(guest_data));
     into.data.data.pSampler = host_layout<VkSampler*> {guest_data}.data;
     break;
   }
@@ -2134,7 +2126,7 @@ void fex_custom_repack_entry(host_layout<VkDescriptorGetInfoEXT>& into, const gu
   case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER: {
     // VkDescriptorAddressInfoEXT*. Repacking required
     guest_layout<VkDescriptorAddressInfoEXT*> guest_ptr;
-    memcpy(&guest_ptr, from.data.data.union_storage, sizeof(guest_ptr));
+    memcpy(&guest_ptr, &from.data.data, sizeof(guest_ptr));
     auto child_mem = (char*)aligned_alloc(alignof(host_layout<VkDescriptorAddressInfoEXT>), sizeof(host_layout<VkDescriptorAddressInfoEXT>));
     auto child = new (child_mem) host_layout<VkDescriptorAddressInfoEXT> {*guest_ptr.get_pointer()};
 
