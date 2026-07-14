@@ -192,8 +192,16 @@ void GenerateThunkLibsAction::EmitLayoutWrappers(clang::ASTContext& context, std
     } else {
       fmt::print(file, "  struct type {{\n");
       for (auto& member : guest_abi.at(struct_name).get_if_struct()->members) {
-        fmt::print(file, "    guest_layout<{}{}> {};\n", member.type_name,
-                   member.array_size ? fmt::format("[{}]", member.array_size.value()) : "", member.member_name);
+        if (type_repack_info.UsesCustomRepackFor(member.member_name) && member.is_union) {
+          // Emit a raw byte array for custom-repacked union members to
+          // avoid depending on guest_layout specializations for types that
+          // may be anonymous (unnamed_*) or otherwise incompatible.
+          auto size_bytes = (member.size_bits + 7) / 8;
+          fmt::print(file, "    guest_layout<uint8_t[{}]> {};\n", size_bytes, member.member_name);
+        } else {
+          fmt::print(file, "    guest_layout<{}{}> {};\n", member.type_name,
+                     member.array_size ? fmt::format("[{}]", member.array_size.value()) : "", member.member_name);
+        }
       }
       fmt::print(file, "  }};\n");
     }

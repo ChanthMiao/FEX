@@ -30,12 +30,14 @@ struct StructInfo : SimpleTypeInfo {
     bool is_function_pointer;
     bool is_integral;
     bool is_signed_integer;
+    bool is_union;
 
     bool operator==(const MemberInfo& other) const {
       return size_bits == other.size_bits && offset_bits == other.offset_bits &&
              // The type name may differ for integral types if all other parameters are equal
              (type_name == other.type_name || (is_integral && other.is_integral)) && member_name == other.member_name &&
-             array_size == other.array_size && is_function_pointer == other.is_function_pointer && is_integral == other.is_integral;
+             array_size == other.array_size && is_function_pointer == other.is_function_pointer && is_integral == other.is_integral &&
+             is_union == other.is_union;
     }
   };
 

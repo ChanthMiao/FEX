@@ -92,6 +92,7 @@ ComputeDataLayout(const clang::ASTContext& context, const std::unordered_map<con
         .is_function_pointer = field_type->isFunctionPointerType(),
         .is_integral = field->getType()->isIntegerType(),
         .is_signed_integer = field->getType()->isSignedIntegerType(),
+        .is_union = field_type->isUnionType(),
       };
 
       // TODO: Process types in dependency-order. Currently we skip this
